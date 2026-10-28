@@ -6,7 +6,7 @@ A single static site (HTML/CSS/JS, no build step) that hosts both brands with a 
 - **Insight** lives under `insight/` (`index.html`, `services.html`, `work.html`, `contact.html`, `text-signup.html`, `privacy.html`, `terms.html`).
 - Shared styles and scripts are in `assets/`. Logos and partner logos are in `assets/` and `assets/partners/`.
 
-Hosting: **Vercel** · Source control: **GitHub** · Local editing: this folder on your Mac.
+Hosting: **Vercel** · Source control: **GitHub** · Editing: locally on your Mac, or in Claude Code cloud sessions (which work on a `claude/…` branch and open a pull request).
 
 ---
 
@@ -84,27 +84,34 @@ Tip: work on a branch for bigger changes and open a Pull Request — Vercel post
 
 ## Clean URLs
 
-`vercel.json` sets `cleanUrls: true`, so pages are served without the `.html` extension:
-`/services`, `/work`, `/contact`, `/insight`, `/insight/text-signup`, etc. Existing `.html` links keep working (they redirect to the clean URL).
+Clean URLs are **off**: `vercel.json` sets `cleanUrls: false` (turned off to fix 404s on the Insight footer links). Pages are served at their `.html` paths — `/services.html`, `/work.html`, `/insight/text-signup.html`, etc. — and internal links use those full paths. If you turn clean URLs back on, re-check every Insight link before pushing.
 
-**For the 10DLC SMS submission**, your sign-up page is live at:
-`https://www.thejacksoncreative.com/insight/text-signup` and (via redirect) `https://www.jacksoninsight.com/text-signup`.
-Privacy and Terms are at `/insight/privacy` and `/insight/terms` (and the `jacksoninsight.com/privacy` · `/terms` shortcuts).
-
----
-
-## The background video (Creative hero)
-
-Drop your looping clip in as `assets/hero.mp4` (optionally `assets/hero.webm` for a smaller file and `assets/hero-poster.jpg` for the first frame), commit, and push. Until then the hero shows its dark background gracefully.
+**For the 10DLC SMS submission**, your sign-up page is at:
+`https://www.thejacksoncreative.com/insight/text-signup.html` and (via redirect) `https://www.jacksoninsight.com/text-signup`.
+Privacy and Terms are at `/insight/privacy.html` and `/insight/terms.html` (and the `jacksoninsight.com/privacy` · `/terms` shortcuts).
 
 ---
 
-## Adding form capture later (optional)
+## Hero mosaics
 
-Right now the contact and SMS sign-up forms open a pre-filled email — no backend required. When you want submissions captured automatically, two easy paths:
+- **Creative** (`index.html`): a 4×3 grid of tiles behind the hero. Four tiles loop muted video clips — drop them in as `assets/hero-grid/clip1.mp4` … `clip4.mp4` (optional matching `.webm`), commit, and push. Until a clip exists its tile shows a still poster. See `assets/hero-grid/README.txt`.
+- **Insight** (`insight/index.html`): still tiles only, using the data-viz set in `assets/insight-grid/` (`tile1–tile6.svg`). Replace those files to change the look.
 
-- **Form service (no code):** create an endpoint at a service like Formspree for your inbox and paste it into each form's `action=""` (there's a comment in the form markup showing exactly where). Done.
-- **Supabase (own your data):** create a Supabase project, add a Vercel Serverless Function under `/api` that inserts submissions into a table, and store the Supabase URL/key as Vercel Environment Variables (never commit them). Useful if you want a stored, timestamped record of SMS opt-in consent. Ask and I can scaffold this.
+---
+
+## Form capture
+
+All three forms post to **Formspree**:
+
+| Form | File | Formspree form |
+|---|---|---|
+| Creative contact | `contact.html` | `mlgqyrpb` |
+| Insight contact | `insight/contact.html` | `mwvgderj` |
+| Insight SMS sign-up | `insight/text-signup.html` | `mwvgderj` (shared with Insight contact) |
+
+To change where a form goes, replace its `action="https://formspree.io/f/…"` URL.
+
+**Option for later — Supabase (own your data):** create a Supabase project, add a Vercel Serverless Function under `/api` that inserts submissions into a table, and store the Supabase URL/key as Vercel Environment Variables (never commit them). Useful if you want a stored, timestamped record of SMS opt-in consent. Ask and I can scaffold this.
 
 ---
 
@@ -129,8 +136,11 @@ Right now the contact and SMS sign-up forms open a pre-filled email — no backe
 │   ├── script.js         # shared interactions
 │   ├── jackson-creative-logo.png
 │   ├── jackson-insight-logo.png
+│   ├── hero-grid/        # Creative hero clips (clip1–4.mp4) + README
+│   ├── insight-grid/     # Insight hero tiles (tile1–6.svg)
+│   ├── work/             # Selected Work card images
 │   └── partners/         # partner logos
-├── vercel.json           # clean URLs + jacksoninsight.com redirects
+├── vercel.json           # jacksoninsight.com redirects (cleanUrls off)
 ├── .gitignore
 └── README.md
 ```
